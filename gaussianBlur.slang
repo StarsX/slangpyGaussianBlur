@@ -52,7 +52,7 @@ void main(uint2 DTid: SV_DispatchThreadID, uint2 Gid: SV_GroupID, uint2 GTid: SV
                 if (y < SHARED_MEM_SIZE)
                 {
                     const int2 uv = clamp(uvStart + int2(x, y), 0, texSize - 1);
-                    g_srcs[y][x] = Src.getv(uv);
+                    g_srcs[y][x] = Src[uv];
                 }
             }
         }
@@ -101,11 +101,11 @@ void main(uint2 DTid: SV_DispatchThreadID, uint2 Gid: SV_GroupID, uint2 GTid: SV
         mu.w += w;
     }
 
-    Dst.setv(DTid, mu.xyz / mu.w);
+    Dst[DTid] = mu.xyz / mu.w;
 }
 
 [numthreads(GROUP_SIZE, GROUP_SIZE, 1)]
 void copy(uint2 DTid: SV_DispatchThreadID, uniform Tensor<float3, 2> Src, uniform RWTensor<float3, 2> Dst)
 {
-    Dst.setv(DTid, Src.getv(DTid));
+    Dst[DTid] = Src[DTid];
 }
